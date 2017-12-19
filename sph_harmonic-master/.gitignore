@@ -1,0 +1,4 @@
+*.sw*
+.nfs*
+.DS_Store
+

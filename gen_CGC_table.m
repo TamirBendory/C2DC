@@ -1,4 +1,4 @@
-% this script generates a table of CGC coefficients up to l_max and saves
+% This script generates a table of CGC coefficients up to l_max and saves
 % it
 
 l_max = 20;

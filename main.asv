@@ -19,11 +19,11 @@ I = double(imresize(I,[n-2*zp,n-2*zp]));
 func(zp+1:n-zp,zp+1:n-zp) = I;
 func = func/(max(max(func)));
 
-func_rot = imrotate(func,rot_angle,'crop','bicubic');
-func_rot = circshift(func_rot,shift);
+%func_rot = imrotate(func,rot_angle,'crop','bicubic');
+%func_rot = circshift(func_rot,shift);
 
-figure; subplot(121); imshow(func); title('original image');
-subplot(122); imshow(func_rot); title('rotated image');
+%figure; subplot(121); imshow(func); title('original image');
+%subplot(122); imshow(func_rot); title('rotated image');
 
 % moving to polar coordinates
 theta_dom = linspace(-pi,pi,n);
@@ -38,16 +38,30 @@ y = linspace(-.5,.5,n);
 
 ext_func = zeros(size(Az));
 ext_func(1:n,1:n) = func;
-ext_func_rot = zeros(size(Az));
-ext_func_rot(1:n,1:n) = func_rot;
+%ext_func_rot = zeros(size(Az));
+%ext_func_rot(1:n,1:n) = func_rot;
 
 % projection onto the sphere
 F = spherefun(ext_func);
-F_rot = spherefun(ext_func_rot);
+%F_rot = spherefun(ext_func_rot);
 
 SH_matrix = compute_SH_coeff(F,n);
-SH_matrix_rot = compute_SH_coeff(F_rot,n);
+%SH_matrix_rot = compute_SH_coeff(F_rot,n);
 
+%% generating a rotated version in the SH domain
+rot_angle = [pi/2,0,0];
+rot_mat1 = [cos(rot_angle(1)),-sin(rot_angle(1)),0;sin(rot_angle(1)),cos(rot_angle(1)),0; 0,0,1]; % ZYZ convention (hopefully)
+rot_mat2 = [cos(rot_angle(2)),0,sin(rot_angle(2));0,1,0;-sin(rot_angle(2)),0,cos(rot_angle(2))];
+rot_mat3 = [cos(rot_angle(3)),-sin(rot_angle(3)),0;sin(rot_angle(3)),cos(rot_angle(3)),0; 0,0,1]; % ZYZ convention (hopefully)
+rot_mat = rot_mat3*rot_mat2*rot_mat1; 
+
+SH_matrix_rot = cell(n+1,1);
+SH_matrix_rot{1}= SH_matrix{1};
+for j=1:n
+SH_matrix_rot{j+1} = wigner_d(j, rot_mat)*SH_matrix{j+1};
+end
+
+%% computing invariants
 [M1,M2,M3] = compute_invariants(SH_matrix);
 [M1_rot,M2_rot,M3_rot] = compute_invariants(SH_matrix_rot);
 

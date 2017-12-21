@@ -1,16 +1,18 @@
-% This script comutes the invariants of two images which are translated and
-% in-plane rotated copies of each other.
+% This script comuptes the invariants of two images on the sphere. The
+% second image is being rotated in SO(3) using D-Wigner matrices.
 % Tamir Bendory, Dec 2017
-
 
 close all;
 
-n = 20;  %must be even for chebfun
-shift_space_domain = 0;
+n = 10;  %must be even for chebfun (we need to find a faster way to compute SH!)
+
+% If 1, the shift and in-plane rotation takes place in the image space. 
+%Otherwise, it is perfomed after the projection on the SH coefficients on the sphere 
+shift_space_domain = 0; 
 
 if shift_space_domain
-rot_angle = 0; % in-plane rotation
-shift = [1,0]; % shift
+rot_angle = 0; % in-plane rotation in image space
+shift = [1,0]; % shift in image space
 zp = max(shift); % zero padding of the image
 else 
     zp = 0;
@@ -20,9 +22,8 @@ end
 rgb = imread('ngc6543a.jpg'); I = rgb2gray(rgb);
 I = I(150:450,150:450);
 indices = floor(linspace(1,size(I,1),n-zp));
-func = zeros(n);
 I = double(imresize(I,[n-2*zp,n-2*zp]));
-func(zp+1:n-zp,zp+1:n-zp) = I;
+func = zeros(n); func(zp+1:n-zp,zp+1:n-zp) = I;
 %func = func/(max(max(func)));
 
 %figure; subplot(121); imshow(func); title('original image');
@@ -45,7 +46,6 @@ ext_func(1:n,1:n) = func;
 F = spherefun(ext_func);
 SH_matrix = compute_SH_coeff(F,n);
 
-
 if shift_space_domain
     func_rot = imrotate(func,rot_angle,'crop','bicubic');
     func_rot = circshift(func_rot,shift);
@@ -54,14 +54,13 @@ if shift_space_domain
     F_rot = spherefun(ext_func_rot);
     SH_matrix_rot = compute_SH_coeff(F_rot,n);
 else
-    rot_angle = [1,1,1]';%2*pi*rand(3,1);%[.,0.31,0.13]';
+    rot_angle = 2*pi*rand(3,1);% random rotation in SO(3)
     SH_matrix_rot = cell(n+1,1);
     SH_matrix_rot{1}= SH_matrix{1};
     for j=1:n
         SH_matrix_rot{j+1} = wigner_d(j, rot_angle)*SH_matrix{j+1};
     end
 end
-
 
 %% computing invariants
 [M1,M2,M3] = compute_invariants(SH_matrix);

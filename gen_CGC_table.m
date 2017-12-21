@@ -11,7 +11,8 @@ for l1 = 0:l_max
             for m1 = -l1:l1
                 for m2 = -l2:l2
                     for m = -l:l
-                        C{l1+1,l2+1,l+1}(l1+1+m1,l2+1+m2,l+1+m) = clebsch_gordan(l1, l2, l, m1, m2, m);
+                        %C{l1+1,l2+1,l+1}(l1+1+m1,l2+1+m2,l+1+m) = clebsch_gordan(l1, l2, l, m1, m2, m);
+                        C{l1+1,l2+1,l+1}(l1+1+m1,l2+1+m2,l+1+m) = clebschgordan(l1, l2, l,m1,m2,m);
                     end
                 end
             end
@@ -19,5 +20,5 @@ for l1 = 0:l_max
     end
 end
 
-str = strcat('CGC_table_',num2str(l_max));
+str = strcat('CGC_EZ_table_',num2str(l_max));
 save(str,'C');

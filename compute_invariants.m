@@ -1,6 +1,5 @@
 % This function computes the invariants for SO(3) according to Rici's paper
-
-% input: SH_matrix  - an array of size degree+1. The lth cell is a vector of size
+% Input: SH_matrix  - an array of size degree+1. The lth cell is a vector of size
 % 2l+1
 
 function [M1,M2,M3] = compute_invariants(SH_matrix)
@@ -19,7 +18,9 @@ end
 %% third-order invariant
 
 % uploading the table of CGC coefficients up to degree 20
-C = load('CGC_table_20'); C = C.C;
+%C = load('CGC_table_20'); 
+C = load('CGC_EZ_table_20'); 
+C = C.C;
 
 % Based on Risi's paper, compute the 4D array g
 g = cell(degree+1,degree+1,degree+1);

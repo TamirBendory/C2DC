@@ -1,26 +1,30 @@
-% This script comutes the invariants of two images which are translated and
-% in-plane rotated copies of each other.
+% This script comuptes the invariants of two images on the sphere. The
+% second image is being rotated in SO(3) using D-Wigner matrices.
 % Tamir Bendory, Dec 2017
-
 
 close all;
 
-n = 20;  %must be even for chebfun
-rot_angle = 0; % in-plane rotation
-shift = [1,1]; % shift 
+n = 10;  %must be even for chebfun (we need to find a faster way to compute SH!)
+
+% If 1, the shift and in-plane rotation takes place in the image space. 
+%Otherwise, it is perfomed after the projection on the SH coefficients on the sphere 
+shift_space_domain = 0; 
+
+if shift_space_domain
+rot_angle = 0; % in-plane rotation in image space
+shift = [1,0]; % shift in image space
 zp = max(shift); % zero padding of the image
+else 
+    zp = 0;
+end
 
 % loading the example image -- "Cat's Eye Nebula"
 rgb = imread('ngc6543a.jpg'); I = rgb2gray(rgb);
 I = I(150:450,150:450);
 indices = floor(linspace(1,size(I,1),n-zp));
-func = zeros(n);
 I = double(imresize(I,[n-2*zp,n-2*zp]));
-func(zp+1:n-zp,zp+1:n-zp) = I;
-func = func/(max(max(func)));
-
-%func_rot = imrotate(func,rot_angle,'crop','bicubic');
-%func_rot = circshift(func_rot,shift);
+func = zeros(n); func(zp+1:n-zp,zp+1:n-zp) = I;
+%func = func/(max(max(func)));
 
 %figure; subplot(121); imshow(func); title('original image');
 %subplot(122); imshow(func_rot); title('rotated image');
@@ -38,28 +42,26 @@ y = linspace(-.5,.5,n);
 
 ext_func = zeros(size(Az));
 ext_func(1:n,1:n) = func;
-%ext_func_rot = zeros(size(Az));
-%ext_func_rot(1:n,1:n) = func_rot;
-
 % projection onto the sphere
 F = spherefun(ext_func);
-%F_rot = spherefun(ext_func_rot);
-
 SH_matrix = compute_SH_coeff(F,n);
-%SH_matrix_rot = compute_SH_coeff(F_rot,n);
 
-%% generating a rotated version in the SH domain
-rot_angle = [pi/2,0,0];
-rot_mat1 = [cos(rot_angle(1)),-sin(rot_angle(1)),0;sin(rot_angle(1)),cos(rot_angle(1)),0; 0,0,1]; % ZYZ convention (hopefully)
-rot_mat2 = [cos(rot_angle(2)),0,sin(rot_angle(2));0,1,0;-sin(rot_angle(2)),0,cos(rot_angle(2))];
-rot_mat3 = [cos(rot_angle(3)),-sin(rot_angle(3)),0;sin(rot_angle(3)),cos(rot_angle(3)),0; 0,0,1]; % ZYZ convention (hopefully)
-rot_mat = rot_mat3*rot_mat2*rot_mat1; 
-
-SH_matrix_rot = cell(n+1,1);
-SH_matrix_rot{1}= SH_matrix{1};
-for j=1:n
-SH_matrix_rot{j+1} = wigner_d(j, rot_mat)*SH_matrix{j+1};
+if shift_space_domain
+    func_rot = imrotate(func,rot_angle,'crop','bicubic');
+    func_rot = circshift(func_rot,shift);
+    ext_func_rot = zeros(size(Az));
+    ext_func_rot(1:n,1:n) = func_rot;
+    F_rot = spherefun(ext_func_rot);
+    SH_matrix_rot = compute_SH_coeff(F_rot,n);
+else
+    rot_angle = 2*pi*rand(3,1);% random rotation in SO(3)
+    SH_matrix_rot = cell(n+1,1);
+    SH_matrix_rot{1}= SH_matrix{1};
+    for j=1:n
+        SH_matrix_rot{j+1} = wigner_d(j, rot_angle)*SH_matrix{j+1};
+    end
 end
+
 
 %% computing invariants
 [M1,M2,M3] = compute_invariants(SH_matrix);
@@ -67,9 +69,9 @@ end
 
 %% computing error
 
-err1 = abs(M1-M1_rot)/abs(M1); 
-err2 = norm(M2(:)-M2_rot(:))/norm(M2(:)); 
-err3 = norm(M3(:)-M3_rot(:))/norm(M3(:)); 
+err1 = abs(M1-M1_rot)/abs(M1);
+err2 = norm(M2(:)-M2_rot(:))/norm(M2(:));
+err3 = norm(M3(:)-M3_rot(:))/norm(M3(:));
 
 display(strcat('err1 = ',num2str(err1)));
 display(strcat('err2 = ',num2str(err2)));

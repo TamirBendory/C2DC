@@ -1,4 +1,4 @@
-%This function computes the SH expansion of a function F already defined on
+%This function computes the SH expansion of a function F, already defined on
 %the sphere
 % output: An array of spherical hatmonics. For each l, the array contains
 % 2l+1 coefficients

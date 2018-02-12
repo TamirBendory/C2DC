@@ -1,0 +1,93 @@
+\documentclass[journal]{article} 
+
+\pdfoutput=1
+
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%\usepackage{multirow}
+\usepackage{color}
+\usepackage{url}
+
+\usepackage{algorithm}
+
+\newcommand{\TODO}[1]{{\color{red}{[#1]}}}
+
+\makeatletter
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\numberwithin{equation}{section}
+%\numberwithin{figure}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}[section]
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{\protect\definitionname}
+\theoremstyle{remark}
+\newtheorem{claim}[thm]{\protect\claimname}
+\theoremstyle{plain}
+\newtheorem{lem}[thm]{\protect\lemmaname}
+
+\newtheorem*{lem*}{Lemma}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{\protect\remarkname}
+\theoremstyle{plain}
+\newtheorem{corollary}[thm]{\protect\corollaryname}
+\theoremstyle{plain}
+\newtheorem{proposition}[thm]{\protect\propositionname}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+%\usepackage{babel}
+\providecommand{\claimname}{Claim}
+\providecommand{\definitionname}{Definition}
+\providecommand{\lemmaname}{Lemma}
+\providecommand{\remarkname}{Remark}
+\providecommand{\theoremname}{Theorem}
+\providecommand{\corollaryname}{Corollary}
+\providecommand{\propositionname}{Proposition}
+
+
+\newcommand{\RL}{\mathbb{R}^L}
+\newcommand{\RLL}{\mathbb{R}^{L\times L}}
+\newcommand{\RNN}{\mathbb{R}^{N\times N}}
+\newcommand{\RN}{\mathbb{R}^{N}}
+
+
+\newcommand{\inner}[1]{\left\langle {#1} \right\rangle}
+\newcommand{\E}[1]{\mathbb{E}\left\{{#1} \right\}}
+\newcommand{\order}[1]{\mathcal{O}\left({#1} \right)}
+\newcommand{\xz}{x_{\textrm{zp}}}
+\newcommand{\DFT}{\operatorname{DFT}}
+\newcommand{\SNR}{{\textsf{SNR}}}
+\newcommand{\hx}{\hat{x}} 
+\newcommand{\one}{\mathbf{1}} 
+
+
+\begin{document}
+
+%\begin{frontmatter}
+
+
+\title{Code flow}
+
+\author{Tamir Bendory}
+\maketitle
+
+\begin{enumerate}
+	
+	\item $f(x,y)$ -- a 2D image on the plane
+	\item We interpolate $f$ on a new set of points $(\tilde{x},\tilde{y})$ to get $\tilde{f}(\tilde{x},\tilde{y})$. These set of points should fit the t-design points on the sphere after the projection. We implicitly assume that the image is smooth so the interpolation is exact. 
+	\item  Projection on the sphere. The new function $f_s(\theta,\phi)$  is defined according to the t-design.
+	\item  Computing $\hat{f}_{\ell,m}$  --the spherical harmonics of $f_s$.
+	\item  Computing the invariants to get $(\mu,P,B)$.
+\end{enumerate}
+
+\end{document}
+
+
+ 
